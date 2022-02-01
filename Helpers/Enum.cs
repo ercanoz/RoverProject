@@ -7,14 +7,6 @@ using System.Threading.Tasks;
 
 namespace RoverProject
 {
-    public enum EnumCommand
-    {
-        RotateEast,
-        RotateWest,
-        RotateNorth,
-        RotateSouth
-    }
-
     public enum EnumDirection
     {
         [Description("East")]

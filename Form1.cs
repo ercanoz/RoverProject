@@ -16,6 +16,9 @@ namespace RoverProject
     {
         public static int iPlateauWidth;
         public static int iPlateauHeight;
+        private RoverObject xRoverObject1;
+        private RoverObject xRoverObject2;
+        private object locker = new object();
 
         public Form1()
         {
@@ -27,25 +30,31 @@ namespace RoverProject
             if (bParseInputValues() == false)
                 return;
 
-            MoveRover(xRoverObject1);
-            MoveRover(xRoverObject2);
+            Thread xThread1 = new Thread(() => MoveRover(xRoverObject1));
+            xThread1.Start();
+
+            Thread xThread2 = new Thread(() => MoveRover(xRoverObject2));
+            xThread2.Start();
         }
 
         private void MoveRover(RoverObject prm_xRoverObject)
         {
-            foreach (char c in prm_xRoverObject.Commands)
+            lock (locker)
             {
-                if (c == 'L')
-                    prm_xRoverObject.RotateLeft();
-                else if (c == 'R')
-                    prm_xRoverObject.RotateRight();
-                else if (c == 'M')
-                    prm_xRoverObject.MoveForward();
+                foreach (char c in prm_xRoverObject.Commands)
+                {
+                    if (c == 'L')
+                        prm_xRoverObject.RotateLeft();
+                    else if (c == 'R')
+                        prm_xRoverObject.RotateRight();
+                    else if (c == 'M')
+                        prm_xRoverObject.MoveForward();
 
-                this.Invoke(new DelegateDrawRover(DrawRover), prm_xRoverObject);
+                    this.Invoke(new DelegateDrawRover(DrawRover), prm_xRoverObject);
 
-                Thread.Sleep(500);
-            }          
+                    Thread.Sleep(300);
+                }
+            }
         }
 
         private delegate void DelegateDrawRover(RoverObject prm_xRoverObject);
